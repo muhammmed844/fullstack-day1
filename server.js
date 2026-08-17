@@ -3,42 +3,40 @@ const express = require("express");
 const app = express();
 const PORT = 3000;
 
-
 app.use(express.json());
 
+// JavaScript array to store blogs
+let blogs = [];
 
-app.get("/", (req, res) => {
-    res.send("Welcome to my Blog Backend!");
-});
-
-
+// GET - Get all blogs
 app.get("/blogs", (req, res) => {
-    res.json([
-        {
-            title: "My First Blog",
-            author: "Sahil",
-            content: "This is my first blog post."
-        },
-        {
-            title: "Learning Express.js",
-            author: "Sahil",
-            content: "Today I learned about GET and POST routes."
-        }
-    ]);
+    res.json(blogs);
 });
 
-
+// POST - Add a new blog
 app.post("/blogs", (req, res) => {
-    const blog = req.body;
+    const { title, author, content } = req.body;
 
-    console.log("New blog received:", blog);
+    if (!title || !author || !content) {
+        return res.status(400).json({
+            message: "Please provide title, author and content."
+        });
+    }
+
+    const newBlog = {
+        id: blogs.length + 1,
+        title: title,
+        author: author,
+        content: content
+    };
+
+    blogs.push(newBlog);
 
     res.status(201).json({
-        message: "Blog added successfully!",
-        blog: blog
+        message: "Blog created successfully!",
+        blog: newBlog
     });
 });
-
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
