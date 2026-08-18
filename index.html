@@ -1,44 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+
+    <title>My Blog Website</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+    <!-- Header -->
     <header>
         <h1>My Website</h1>
 
+        <!-- Navigation -->
         <nav>
-            <a href="index.html">Home</a> |
+            <a href="index.html">Home</a>
             <a href="blog.html">Blog</a>
         </nav>
-
-        <hr>
     </header>
 
+
+    <!-- Main Content -->
     <main>
-        <h2>Welcome to My Website</h2>
 
-        <p>
-            This is the Home Page created as part of my Full Stack Internship Day 2 task.
-        </p>
+        <!-- Welcome Section -->
+        <section>
+            <h2>Welcome to My Website</h2>
 
-        <h3>About Us</h3>
+            <p>
+                Welcome to my blog website! This website is created
+                as part of my Full Stack Development Internship.
+            </p>
 
-        <p>
-            We share blogs about web development, programming, and technology.
-        </p>
-        <button>Read More</button>
+            <h3>About Us</h3>
+
+            <p>
+                We share blogs about web development, programming,
+                technology, and my learning journey.
+            </p>
+
+            <button onclick="window.location.href='blog.html'">
+                Add a Blog
+            </button>
+        </section>
+
+
+        <!-- Blog Section -->
+        <section>
+            <h2>Latest Blog Posts</h2>
+
+            <!-- JavaScript will display blogs here -->
+            <div id="blogContainer">
+
+                <p>Loading blogs...</p>
+
+            </div>
+        </section>
+
     </main>
 
-    <hr>
 
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 My Website. All Rights Reserved.</p>
     </footer>
 
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
 </body>
+
 </html>

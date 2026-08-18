@@ -1,40 +1,83 @@
+
+
 const blogForm = document.getElementById("blogForm");
-const title = document.getElementById("title");
-const author = document.getElementById("author");
-const content = document.getElementById("content");
-const message = document.getElementById("message");
-const blogContainer = document.getElementById("blogContainer");
 
-blogForm.addEventListener("submit", function(event) {
+if (blogForm) {
 
-    event.preventDefault();
+    const title = document.getElementById("title");
+    const author = document.getElementById("author");
+    const content = document.getElementById("content");
+    const message = document.getElementById("message");
+    const blogContainer = document.getElementById("blogContainer");
 
-    // Get values from the form
-    const blogTitle = title.value.trim();
-    const blogAuthor = author.value.trim();
-    const blogContent = content.value.trim();
+    blogForm.addEventListener("submit", function(event) {
 
-    // Validation
-    if (blogTitle === "" || blogAuthor === "" || blogContent === "") {
-        message.textContent = "Please fill in all fields.";
-        return;
-    }
+        event.preventDefault();
 
-    // Create blog card
-    const blogCard = document.createElement("article");
+        // Get values from the form
+        const blogTitle = title.value.trim();
+        const blogAuthor = author.value.trim();
+        const blogContent = content.value.trim();
 
-    blogCard.innerHTML = `
-        <h3>${blogTitle}</h3>
-        <p><strong>By:</strong> ${blogAuthor}</p>
-        <p>${blogContent}</p>
-    `;
+        // Validation
+        if (blogTitle === "" || blogAuthor === "" || blogContent === "") {
+            message.textContent = "Please fill in all fields.";
+            return;
+        }
 
-    // Add blog card to page
-    blogContainer.appendChild(blogCard);
+        // Create blog card
+        const blogCard = document.createElement("article");
 
-    // Success message
-    message.textContent = "Blog added successfully!";
+        blogCard.innerHTML = `
+            <h3>${blogTitle}</h3>
+            <p><strong>By:</strong> ${blogAuthor}</p>
+            <p>${blogContent}</p>
+        `;
 
-    // Clear form
-    blogForm.reset();
-});
+        // Add blog card to page
+        blogContainer.appendChild(blogCard);
+
+        // Success message
+        message.textContent = "Blog added successfully!";
+
+        // Clear form
+        blogForm.reset();
+    });
+}
+
+
+const homeBlogContainer = document.getElementById("blogContainer");
+
+if (homeBlogContainer && !blogForm) {
+
+    fetch("http://localhost:3000/blogs")
+        .then(response => response.json())
+        .then(blogs => {
+
+            if (blogs.length === 0) {
+                homeBlogContainer.innerHTML = "<p>No blogs available yet.</p>";
+                return;
+            }
+
+            blogs.forEach(blog => {
+
+                const blogCard = document.createElement("article");
+
+                blogCard.innerHTML = `
+                    <h3>${blog.title}</h3>
+                    <p><strong>Author:</strong> ${blog.author}</p>
+                    <p>${blog.content}</p>
+                `;
+
+                homeBlogContainer.appendChild(blogCard);
+            });
+
+        })
+        .catch(error => {
+
+            console.error("Error fetching blogs:", error);
+
+            homeBlogContainer.innerHTML =
+                "<p>Unable to load blogs.</p>";
+        });
+}
