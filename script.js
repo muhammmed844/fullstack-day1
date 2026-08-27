@@ -14,7 +14,6 @@ if (blogForm) {
 
         event.preventDefault();
 
-        // Get values from the form
         const blogTitle = title.value.trim();
         const blogAuthor = author.value.trim();
         const blogContent = content.value.trim();
@@ -30,20 +29,19 @@ if (blogForm) {
 
         blogCard.innerHTML = `
             <h3>${blogTitle}</h3>
-            <p><strong>By:</strong> ${blogAuthor}</p>
+            <p><strong>Author:</strong> ${blogAuthor}</p>
             <p>${blogContent}</p>
         `;
 
-        // Add blog card to page
         blogContainer.appendChild(blogCard);
 
-        // Success message
         message.textContent = "Blog added successfully!";
 
-        // Clear form
         blogForm.reset();
     });
 }
+
+
 
 
 const homeBlogContainer = document.getElementById("blogContainer");
@@ -55,7 +53,8 @@ if (homeBlogContainer && !blogForm) {
         .then(blogs => {
 
             if (blogs.length === 0) {
-                homeBlogContainer.innerHTML = "<p>No blogs available yet.</p>";
+                homeBlogContainer.innerHTML =
+                    "<p>No blogs available yet.</p>";
                 return;
             }
 
@@ -67,6 +66,14 @@ if (homeBlogContainer && !blogForm) {
                     <h3>${blog.title}</h3>
                     <p><strong>Author:</strong> ${blog.author}</p>
                     <p>${blog.content}</p>
+
+                    <button onclick="editBlog(${blog.id})">
+                        Edit
+                    </button>
+
+                    <button onclick="deleteBlog(${blog.id})">
+                        Delete
+                    </button>
                 `;
 
                 homeBlogContainer.appendChild(blogCard);
@@ -80,4 +87,80 @@ if (homeBlogContainer && !blogForm) {
             homeBlogContainer.innerHTML =
                 "<p>Unable to load blogs.</p>";
         });
+}
+
+
+
+
+function editBlog(id) {
+
+    const newTitle = prompt("Enter new title:");
+    const newAuthor = prompt("Enter new author:");
+    const newContent = prompt("Enter new content:");
+
+    if (!newTitle || !newAuthor || !newContent) {
+        alert("All fields are required.");
+        return;
+    }
+
+    fetch(`http://localhost:3000/blogs/${id}`, {
+
+        method: "PUT",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            title: newTitle,
+            author: newAuthor,
+            content: newContent
+        })
+
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        alert(data.message);
+
+        location.reload();
+
+    })
+    .catch(error => {
+
+        console.error("Error updating blog:", error);
+
+    });
+}
+
+
+
+
+function deleteBlog(id) {
+
+    const confirmDelete =
+        confirm("Are you sure you want to delete this blog?");
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    fetch(`http://localhost:3000/blogs/${id}`, {
+
+        method: "DELETE"
+
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        alert(data.message);
+
+        location.reload();
+
+    })
+    .catch(error => {
+
+        console.error("Error deleting blog:", error);
+
+    });
 }

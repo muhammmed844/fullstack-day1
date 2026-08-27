@@ -40,6 +40,57 @@ app.post("/blogs", (req, res) => {
     });
 });
 
+// PUT - Update an existing blog
+app.put("/blogs/:id", (req, res) => {
+    const blogId = parseInt(req.params.id);
+
+    const blog = blogs.find(blog => blog.id === blogId);
+
+    if (!blog) {
+        return res.status(404).json({
+            message: "Blog not found"
+        });
+    }
+
+    const { title, author, content } = req.body;
+
+    if (!title || !author || !content) {
+        return res.status(400).json({
+            message: "Please provide title, author and content."
+        });
+    }
+
+    blog.title = title;
+    blog.author = author;
+    blog.content = content;
+
+    res.json({
+        message: "Blog updated successfully!",
+        blog: blog
+    });
+});
+
+// DELETE - Delete a blog
+app.delete("/blogs/:id", (req, res) => {
+    const blogId = parseInt(req.params.id);
+
+    const blogIndex = blogs.findIndex(blog => blog.id === blogId);
+
+    if (blogIndex === -1) {
+        return res.status(404).json({
+            message: "Blog not found"
+        });
+    }
+
+    const deletedBlog = blogs.splice(blogIndex, 1);
+
+    res.json({
+        message: "Blog deleted successfully!",
+        blog: deletedBlog[0]
+    });
+});
+
+// Start server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
