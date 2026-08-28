@@ -1,4 +1,9 @@
+const API_URL = "http://localhost:3000/blogs";
 
+
+// ==========================================
+// ADD BLOG
+// ==========================================
 
 const blogForm = document.getElementById("blogForm");
 
@@ -8,7 +13,6 @@ if (blogForm) {
     const author = document.getElementById("author");
     const content = document.getElementById("content");
     const message = document.getElementById("message");
-    const blogContainer = document.getElementById("blogContainer");
 
     blogForm.addEventListener("submit", function(event) {
 
@@ -19,52 +23,90 @@ if (blogForm) {
         const blogContent = content.value.trim();
 
         // Validation
-        if (blogTitle === "" || blogAuthor === "" || blogContent === "") {
+        if (
+            blogTitle === "" ||
+            blogAuthor === "" ||
+            blogContent === ""
+        ) {
             message.textContent = "Please fill in all fields.";
             return;
         }
 
-        // Create blog card
-        const blogCard = document.createElement("article");
+        // Send blog to Express backend
+        fetch(API_URL, {
 
-        blogCard.innerHTML = `
-            <h3>${blogTitle}</h3>
-            <p><strong>Author:</strong> ${blogAuthor}</p>
-            <p>${blogContent}</p>
-        `;
+            method: "POST",
 
-        blogContainer.appendChild(blogCard);
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-        message.textContent = "Blog added successfully!";
+            body: JSON.stringify({
+                title: blogTitle,
+                author: blogAuthor,
+                content: blogContent
+            })
 
-        blogForm.reset();
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.blog) {
+                message.textContent = "Blog added successfully!";
+                blogForm.reset();
+            } else {
+                message.textContent = data.message;
+            }
+
+        })
+        .catch(error => {
+
+            console.error("Error adding blog:", error);
+
+            message.textContent =
+                "Unable to add blog. Make sure the server is running.";
+
+        });
     });
 }
 
 
+// ==========================================
+// DISPLAY BLOGS
+// ==========================================
 
-
-const homeBlogContainer = document.getElementById("blogContainer");
+const homeBlogContainer =
+    document.getElementById("blogContainer");
 
 if (homeBlogContainer && !blogForm) {
 
-    fetch("http://localhost:3000/blogs")
+    fetch(API_URL)
+
         .then(response => response.json())
+
         .then(blogs => {
 
             if (blogs.length === 0) {
+
                 homeBlogContainer.innerHTML =
                     "<p>No blogs available yet.</p>";
+
                 return;
             }
 
             blogs.forEach(blog => {
 
-                const blogCard = document.createElement("article");
+                const blogCard =
+                    document.createElement("article");
 
                 blogCard.innerHTML = `
                     <h3>${blog.title}</h3>
-                    <p><strong>Author:</strong> ${blog.author}</p>
+
+                    <p>
+                        <strong>Author:</strong>
+                        ${blog.author}
+                    </p>
+
                     <p>${blog.content}</p>
 
                     <button onclick="editBlog(${blog.id})">
@@ -80,6 +122,7 @@ if (homeBlogContainer && !blogForm) {
             });
 
         })
+
         .catch(error => {
 
             console.error("Error fetching blogs:", error);
@@ -90,7 +133,9 @@ if (homeBlogContainer && !blogForm) {
 }
 
 
-
+// ==========================================
+// EDIT BLOG
+// ==========================================
 
 function editBlog(id) {
 
@@ -99,11 +144,13 @@ function editBlog(id) {
     const newContent = prompt("Enter new content:");
 
     if (!newTitle || !newAuthor || !newContent) {
+
         alert("All fields are required.");
+
         return;
     }
 
-    fetch(`http://localhost:3000/blogs/${id}`, {
+    fetch(`${API_URL}/${id}`, {
 
         method: "PUT",
 
@@ -118,7 +165,9 @@ function editBlog(id) {
         })
 
     })
+
     .then(response => response.json())
+
     .then(data => {
 
         alert(data.message);
@@ -126,6 +175,7 @@ function editBlog(id) {
         location.reload();
 
     })
+
     .catch(error => {
 
         console.error("Error updating blog:", error);
@@ -134,7 +184,9 @@ function editBlog(id) {
 }
 
 
-
+// ==========================================
+// DELETE BLOG
+// ==========================================
 
 function deleteBlog(id) {
 
@@ -145,12 +197,14 @@ function deleteBlog(id) {
         return;
     }
 
-    fetch(`http://localhost:3000/blogs/${id}`, {
+    fetch(`${API_URL}/${id}`, {
 
         method: "DELETE"
 
     })
+
     .then(response => response.json())
+
     .then(data => {
 
         alert(data.message);
@@ -158,6 +212,7 @@ function deleteBlog(id) {
         location.reload();
 
     })
+
     .catch(error => {
 
         console.error("Error deleting blog:", error);
